@@ -33,7 +33,11 @@
   ],
   "scripts": {
     "example": "yarn workspace @someosap/react-native-google-signin-example",
+    "example:start": "yarn example start",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "example:pod-install": "cd example/ios && pod install",
+    "open:xcode": "xed example/ios",
+    "open:android-studio": "open -a \"Android Studio\" example/android",
     "prepare": "bob build",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",

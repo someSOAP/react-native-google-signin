@@ -79,7 +79,7 @@ android {
 
     namespace "someosap.reactnativegooglesignin.example"
     defaultConfig {
-        applicationId "someosap.reactnativegooglesignin.example"
+//        applicationId "" // <-- define your app id here
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,5 +1,13 @@
 import ReactNativeGoogleSignin from './NativeReactNativeGoogleSignin';
 
-export function multiply(a: number, b: number): number {
-  return ReactNativeGoogleSignin.multiply(a, b);
+interface SignInConfig {
+  serverClientId: string;
+  autoSelectEnabled?: boolean;
+  filterByAuthorizedAccounts?: boolean;
+  requestVerifiedPhoneNumber?: boolean;
+  nonce?: string;
+}
+
+export function getGoogleSignInToken(config: SignInConfig): Promise<string> {
+  return ReactNativeGoogleSignin.getGoogleSignInToken(config);
 }

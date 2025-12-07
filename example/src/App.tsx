@@ -1,12 +1,24 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from '@someosap/react-native-google-signin';
+import { View, StyleSheet, Button, Alert } from 'react-native';
+import { getGoogleSignInToken } from '@someosap/react-native-google-signin';
 
-const result = multiply(3, 7);
+const serverClientId = ''; // Put your server client id here
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Button
+        title="TEST"
+        onPress={() => {
+          console.log('STARTED');
+          getGoogleSignInToken({
+            serverClientId,
+          })
+            .then((res) => {
+              Alert.alert('Token:', res);
+            })
+            .catch(console.error);
+        }}
+      />
     </View>
   );
 }

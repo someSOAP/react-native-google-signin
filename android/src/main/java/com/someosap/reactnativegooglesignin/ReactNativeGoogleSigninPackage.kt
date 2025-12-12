@@ -1,4 +1,4 @@
-package com.someosap.reactnativegooglesignin
+package com.somesoap.reactnativegooglesignin
 
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule

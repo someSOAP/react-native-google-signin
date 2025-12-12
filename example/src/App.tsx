@@ -2,7 +2,7 @@ import { View, StyleSheet, Button, Alert } from 'react-native';
 import {
   getGoogleSignInToken,
   ErrorCodes,
-} from '@someosap/react-native-google-signin';
+} from '@somesoap/react-native-google-signin';
 
 const serverClientId = ''; // Put your server client id here
 

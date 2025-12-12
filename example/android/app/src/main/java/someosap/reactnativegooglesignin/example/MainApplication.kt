@@ -1,4 +1,4 @@
-package someosap.reactnativegooglesignin.example
+package somesoap.reactnativegooglesignin.example
 
 import android.app.Application
 import com.facebook.react.PackageList

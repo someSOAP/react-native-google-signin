@@ -3402,7 +3402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@someosap/react-native-google-signin-example@workspace:example":
+"@somesoap/react-native-google-signin-example@workspace:example":
   version: 0.0.0-use.local
   resolution: "@someosap/react-native-google-signin-example@workspace:example"
   dependencies:

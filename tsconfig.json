@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@someosap/react-native-google-signin": ["./src/index"]
+      "@somesoap/react-native-google-signin": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

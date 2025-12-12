@@ -8,13 +8,13 @@ for Android and [Google Sign-In](https://developers.google.com/identity/sign-in/
 ## Installation
 
 ```sh
-npm install @someosap/react-native-google-signin
+npm install @somesoap/react-native-google-signin
 ```
 
 or
 
 ```sh
-yarn add install @someosap/react-native-google-signin
+yarn add install @somesoap/react-native-google-signin
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ The most common use for this package is to receive `idToken` for further usage f
 backend services or Firebase Auth.
 
 ```tsx
-import { getGoogleSignInToken } from '@someosap/react-native-google-signin';
+import { getGoogleSignInToken } from '@somesoap/react-native-google-signin';
 
 export function getIdToken() {
   return getGoogleSignInToken({
@@ -43,7 +43,7 @@ Purposed usage is for OAuth authentication in conjunction with Firebase.
 ```tsx
 import { Button } from 'react-native';
 
-import { getGoogleSignInToken, ErrorCodes } from '@someosap/react-native-google-signin';
+import { getGoogleSignInToken, ErrorCodes } from '@somesoap/react-native-google-signin';
 import { GoogleAuthProvider, getAuth, signInWithCredential, onAuthStateChanged } from '@react-native-firebase/auth';
 
 const handleSignInPress = async () => {

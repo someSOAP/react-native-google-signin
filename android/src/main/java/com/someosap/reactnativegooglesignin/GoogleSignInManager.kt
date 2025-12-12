@@ -1,4 +1,4 @@
-package com.someosap.reactnativegooglesignin
+package com.somesoap.reactnativegooglesignin
 
 import android.app.Activity
 import android.content.Context

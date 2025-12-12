@@ -60,6 +60,7 @@
   },
   "homepage": "https://github.com/someSOAP/react-native-google-signin#readme",
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {

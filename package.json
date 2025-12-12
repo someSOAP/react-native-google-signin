@@ -51,14 +51,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/someSOAP/someosap-react-native-google-signin.git"
+    "url": "git+https://github.com/someSOAP/react-native-google-signin.git"
   },
   "author": "someSOAP <andrey.meg@gmail.com> (https://github.com/someSOAP)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/someSOAP/someosap-react-native-google-signin/issues"
+    "url": "https://github.com/someSOAP/react-native-google-signin/issues"
   },
-  "homepage": "https://github.com/someSOAP/someosap-react-native-google-signin#readme",
+  "homepage": "https://github.com/someSOAP/react-native-google-signin#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

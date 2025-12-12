@@ -2626,7 +2626,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 448b422f8af1dedf81374eacc90a15439a0ed7f5
   ReactCodegen: 3baedb0c33f963250c866151b825a3c5194b12f1
   ReactCommon: e897f9a1b4afab370cfefaaf5fb3c80371bc3937
-  ReactNativeGoogleSignin: 78dc42454320090fe79ca91d9a4f019a68984d1d
+  ReactNativeGoogleSignin: 525799993ea94838c6548a2b5aadfa6aafa89c00
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 11c9686a21e2cd82a094a723649d9f4507200fb0
 

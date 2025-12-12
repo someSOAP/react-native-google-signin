@@ -1,6 +1,5 @@
 package com.someosap.reactnativegooglesignin
 
-import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.bridge.Promise
@@ -17,15 +16,30 @@ class ReactNativeGoogleSigninModule(reactContext: ReactApplicationContext) :
     return NAME
   }
 
-  override fun getGoogleSignInToken(configs: ReadableMap, promise: Promise) {
+  override fun getGoogleCredentials(configs: ReadableMap, promise: Promise) {
     val activity = reactApplicationContext.currentActivity
 
     if(activity == null) {
-      promise.reject("A", "cant call signIn because currentActivity is null")
+      promise.reject("ERR_ACTIVITY", "Can't call getGoogleCredentials because currentActivity is null")
       return
     }
 
-    manager.getGoogleSignInToken(activity, configs, promise)
+
+
+    val serverClientId = configs.getString("serverClientId")
+    val nonce = configs.getString("nonce")
+
+    if(serverClientId == null) {
+      promise.reject("ERROR", "serverClientId must be string")
+      return
+    }
+
+    manager.getGoogleCredentials(
+      activity = activity,
+      serverClientId = serverClientId,
+      nonce = nonce,
+      promise = promise,
+    )
   }
 
   companion object {

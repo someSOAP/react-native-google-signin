@@ -14,9 +14,15 @@ export default function App() {
             serverClientId,
           })
             .then((res) => {
-              Alert.alert('Token:', res);
+              console.log({ res });
+              Alert.alert('Token:', JSON.stringify(res));
             })
-            .catch(console.error);
+            .catch((err) => {
+              if (err.code === 'CANCELLATION_ERR') {
+                return;
+              }
+              console.error(err);
+            });
         }}
       />
     </View>

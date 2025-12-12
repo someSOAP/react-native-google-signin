@@ -11,8 +11,8 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReadableMap
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.CoroutineScope
@@ -20,45 +20,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class GoogleSignInManager(val context: Context) {
+
+  companion object {
+    const val ERR_CODE = "ERROR"
+    const val NO_CREDS_ERR = "NO_CREDS_ERR"
+    const val CANCELLATION_ERR = "CANCELLATION_ERR"
+    const val GET_CREDS_ERR = "CANCELLATION_ERR"
+  }
+
   private fun getCredentialOption(
     serverClientId: String,
-    autoSelectEnabled: Boolean,
-    filterByAuthorizedAccounts: Boolean,
-    requestVerifiedPhoneNumber: Boolean,
     nonce: String?
   ): CredentialOption {
 
     val builder = GetGoogleIdOption.Builder()
 
-
     return builder.setServerClientId(serverClientId)
-      .setAutoSelectEnabled(autoSelectEnabled)
-      .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
-      .setRequestVerifiedPhoneNumber(requestVerifiedPhoneNumber)
+//      .setAutoSelectEnabled(autoSelectEnabled)
+//      .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
+//      .setRequestVerifiedPhoneNumber(requestVerifiedPhoneNumber)
       .setNonce(nonce)
       .build()
   }
 
+  fun getGoogleCredentials(
+    activity: Activity,
+    serverClientId: String,
+    nonce: String?,
+    promise: Promise
+  ) {
 
-  fun getGoogleSignInToken(activity: Activity, configs: ReadableMap, promise: Promise) {
     val manager = CredentialManager.create(activity)
-
-    val serverClientId = configs.getString("serverClientId")
-    val autoSelectEnabled = if (configs.hasKey("autoSelectEnabled")) configs.getBoolean("autoSelectEnabled") else false
-    val filterByAuthorizedAccounts = if (configs.hasKey("filterByAuthorizedAccounts")) configs.getBoolean("filterByAuthorizedAccounts") else false
-    val requestVerifiedPhoneNumber = if (configs.hasKey("requestVerifiedPhoneNumber")) configs.getBoolean("requestVerifiedPhoneNumber") else false
-    val nonce = configs.getString("nonce")
-
-    if(serverClientId == null) {
-      promise.reject("A", "serverClientId must be string")
-      return
-    }
 
     val creds = getCredentialOption(
       serverClientId,
-      autoSelectEnabled,
-      filterByAuthorizedAccounts,
-      requestVerifiedPhoneNumber,
       nonce,
     )
 
@@ -72,14 +67,21 @@ class GoogleSignInManager(val context: Context) {
 
         when (result.credential) {
           is CustomCredential -> {
-            if(result.credential.type === GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-              val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
-              val googleTokenId = googleIdTokenCredential.idToken
-              promise.resolve(googleTokenId)
+            if(result.credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+              val googleCreds = GoogleIdTokenCredential.createFrom(result.credential.data)
+              val response = Arguments.createMap()
+
+              response.putString("idToken", googleCreds.idToken)
+              response.putString("givenName", googleCreds.givenName)
+              response.putString("familyName", googleCreds.familyName)
+              response.putString("email", googleCreds.id)
+              response.putString("profilePictureUri", googleCreds.profilePictureUri.toString())
+
+              promise.resolve(response)
             }
           }
           else -> {
-            promise.reject("B", "FAIL SOME")
+            promise.reject(ERR_CODE, "Unknown type of credentials")
           }
         }
 
@@ -87,17 +89,13 @@ class GoogleSignInManager(val context: Context) {
         val intent = Intent(Settings.ACTION_ADD_ACCOUNT)
         intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
         activity.startActivity(intent)
-        promise.reject("B", e)
+        promise.reject(NO_CREDS_ERR, e)
 
       } catch (e: GetCredentialCancellationException) {
-        promise.reject("C", e)
+        promise.reject(CANCELLATION_ERR, e)
       } catch (e: GetCredentialException) {
-        promise.reject("D", e)
-      } catch (e: Error) {
-        promise.reject("E", e)
+        promise.reject(GET_CREDS_ERR, e)
       }
     }
-
   }
-
 }

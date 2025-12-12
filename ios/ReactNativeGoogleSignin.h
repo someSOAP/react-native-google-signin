@@ -2,4 +2,6 @@
 
 @interface ReactNativeGoogleSignin : NSObject <NativeReactNativeGoogleSigninSpec>
 
+@property (nonatomic, strong) NSDictionary *plist;
+
 @end

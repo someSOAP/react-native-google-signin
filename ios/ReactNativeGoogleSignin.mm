@@ -42,11 +42,11 @@
              reject:(nonnull RCTPromiseRejectBlock)reject
 {
   if(error.code == -5) {
-    reject(@"CANCELLATION_ERR", error.localizedDescription, nil);
+    reject(@"CANCELLATION_ERROR", error.localizedDescription, nil);
     return;
   }
   
-  reject(@"ERROR", error.localizedDescription, nil);
+  reject(@"GET_CREDENTIALS_ERROR", error.localizedDescription, nil);
 }
 
 - (void)getGoogleCredentials:(JS::NativeReactNativeGoogleSignin::GetGoogleCredentialsConfigs &)configs

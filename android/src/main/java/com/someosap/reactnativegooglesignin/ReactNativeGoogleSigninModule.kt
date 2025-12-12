@@ -25,7 +25,6 @@ class ReactNativeGoogleSigninModule(reactContext: ReactApplicationContext) :
     }
 
 
-
     val serverClientId = configs.getString("serverClientId")
     val nonce = configs.getString("nonce")
 

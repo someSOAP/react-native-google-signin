@@ -19,13 +19,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class GoogleSignInManager(val context: Context) {
+class GoogleSignInManager(
+  private val context: Context
+) {
 
   companion object {
-    const val ERR_CODE = "ERROR"
-    const val NO_CREDS_ERR = "NO_CREDS_ERR"
-    const val CANCELLATION_ERR = "CANCELLATION_ERR"
-    const val GET_CREDS_ERR = "CANCELLATION_ERR"
+    const val CANCELLATION_ERROR = "CANCELLATION_ERROR"
   }
 
   private fun getCredentialOption(
@@ -81,20 +80,16 @@ class GoogleSignInManager(val context: Context) {
             }
           }
           else -> {
-            promise.reject(ERR_CODE, "Unknown type of credentials")
+            promise.reject("UNKNOWN_CREDENTIALS_TYPE", "Unknown type of credentials")
           }
         }
 
       } catch (e: NoCredentialException) {
-        val intent = Intent(Settings.ACTION_ADD_ACCOUNT)
-        intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
-        activity.startActivity(intent)
-        promise.reject(NO_CREDS_ERR, e)
-
+        promise.reject("NO_CREDENTIALS_ERROR", e)
       } catch (e: GetCredentialCancellationException) {
-        promise.reject(CANCELLATION_ERR, e)
+        promise.reject(CANCELLATION_ERROR, e)
       } catch (e: GetCredentialException) {
-        promise.reject(GET_CREDS_ERR, e)
+        promise.reject("GET_CREDENTIALS_ERROR", e)
       }
     }
   }

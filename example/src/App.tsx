@@ -1,5 +1,8 @@
 import { View, StyleSheet, Button, Alert } from 'react-native';
-import { getGoogleSignInToken } from '@someosap/react-native-google-signin';
+import {
+  getGoogleSignInToken,
+  ErrorCodes,
+} from '@someosap/react-native-google-signin';
 
 const serverClientId = ''; // Put your server client id here
 
@@ -15,10 +18,10 @@ export default function App() {
           })
             .then((res) => {
               console.log({ res });
-              Alert.alert('Token:', JSON.stringify(res));
+              Alert.alert('Token:', JSON.stringify(res.idToken));
             })
             .catch((err) => {
-              if (err.code === 'CANCELLATION_ERR') {
+              if (err.code === ErrorCodes.CANCELLATION_ERROR) {
                 return;
               }
               console.error(err);

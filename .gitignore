@@ -84,3 +84,11 @@ android/generated
 
 # React Native Nitro Modules
 nitrogen/
+
+# Local OAuth test configuration
+example/src/config.local.json
+example/ios/GoogleSignIn.local.xcconfig
+example/android/app/src/main/google-services.json
+example/ios/GoogleService-Info.plist
+example/ios/ReactNativeGoogleSigninExample/GoogleService-Info.plist
+coverage/

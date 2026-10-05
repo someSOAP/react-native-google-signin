@@ -79,9 +79,11 @@ android {
 
     namespace "somesoap.reactnativegooglesignin.example"
     defaultConfig {
-//        applicationId "" // <-- define your app id here
+        applicationId project.findProperty("googleSigninApplicationId") ?: "somesoap.reactnativegooglesignin.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "boolean", "GOOGLE_SIGNIN_E2E", "${project.findProperty('googleSigninE2E') == 'true'}"
         versionCode 1
         versionName "1.0"
     }
@@ -109,6 +111,9 @@ android {
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
+    androidTestImplementation "androidx.test:runner:1.6.2"
+    androidTestImplementation "androidx.test.ext:junit:1.2.1"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:2.3.0"
     implementation("com.facebook.react:react-android")
 
     if (hermesEnabled.toBoolean()) {

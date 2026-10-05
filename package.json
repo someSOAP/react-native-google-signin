@@ -1,6 +1,6 @@
 {
   "name": "@somesoap/react-native-google-signin",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Google Sign in implementation",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -12,10 +12,14 @@
     "open:xcode": "xed example/ios",
     "open:android-studio": "open -a \"Android Studio\" example/android",
     "prepare": "bob build",
-    "typecheck": "tsc",
+    "typecheck": "node scripts/configure-example.mjs && tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "release": "release-it --only-version",
-    "test": "jest"
+    "test": "jest",
+    "test:android": "cd example/android && ./gradlew :somesoap_react-native-google-signin:testDebugUnitTest",
+    "test:ios": "bash scripts/test-ios.sh",
+    "e2e:android": "cd example/android && ./gradlew :app:connectedDebugAndroidTest -PgoogleSigninE2E=true",
+    "e2e:ios": "bash scripts/e2e-ios.sh"
   },
   "exports": {
     ".": {
@@ -42,7 +46,9 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "!android/src/test",
+    "!android/src/androidTest"
   ],
   "keywords": [
     "react-native",
@@ -159,7 +165,8 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
-    ]
+    ],
+    "watchman": false
   },
   "create-react-native-library": {
     "languages": "kotlin-objc",

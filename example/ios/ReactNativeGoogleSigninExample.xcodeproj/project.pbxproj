@@ -9,20 +9,39 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-ReactNativeGoogleSigninExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-ReactNativeGoogleSigninExample.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		46A9C24B6B184F324C3CB408 /* AuthUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB81C628C1720A772F99641 /* AuthUITests.swift */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		CCD7B40BE769F95E4AD88738 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		E8EE6D5FDEA0F743699E51F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70059EEC612A2DC732160FF6 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BCA4276DC51C15D22BDF92D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = ReactNativeGoogleSigninExample;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		0C470E615CEA3D7F236D664D /* GoogleSignIn.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.debug.xcconfig; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ReactNativeGoogleSigninExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactNativeGoogleSigninExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ReactNativeGoogleSigninExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ReactNativeGoogleSigninExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ReactNativeGoogleSigninExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2C60E71C12D830C6345FD240 /* GoogleSignIn.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.release.xcconfig; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-ReactNativeGoogleSigninExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeGoogleSigninExample.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeGoogleSigninExample/Pods-ReactNativeGoogleSigninExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ReactNativeGoogleSigninExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeGoogleSigninExample.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeGoogleSigninExample/Pods-ReactNativeGoogleSigninExample.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-ReactNativeGoogleSigninExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativeGoogleSigninExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70059EEC612A2DC732160FF6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ReactNativeGoogleSigninExample/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNativeGoogleSigninExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		829D667988F97E6ADAAE593F /* AuthUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AuthUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9BB81C628C1720A772F99641 /* AuthUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthUITests.swift; path = AuthUITests/AuthUITests.swift; sourceTree = "<group>"; };
+		CB5EA12EC1E15B0BF3EC3DD5 /* GoogleSignIn.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.xcconfig; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -32,6 +51,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-ReactNativeGoogleSigninExample.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		79E29F4FFE5B9F537E843CE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8EE6D5FDEA0F743699E51F5 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,8 +82,17 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-ReactNativeGoogleSigninExample.a */,
+				698D92A28BB5405BFB79B0BE /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		698D92A28BB5405BFB79B0BE /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				70059EEC612A2DC732160FF6 /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -74,6 +110,10 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				CB5EA12EC1E15B0BF3EC3DD5 /* GoogleSignIn.xcconfig */,
+				0C470E615CEA3D7F236D664D /* GoogleSignIn.debug.xcconfig */,
+				2C60E71C12D830C6345FD240 /* GoogleSignIn.release.xcconfig */,
+				9BB81C628C1720A772F99641 /* AuthUITests.swift */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -84,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* ReactNativeGoogleSigninExample.app */,
+				829D667988F97E6ADAAE593F /* AuthUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +162,24 @@
 			productReference = 13B07F961A680F5B00A75B9A /* ReactNativeGoogleSigninExample.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A52E1BE90226306D9D074FA7 /* AuthUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A462C7E008B9409495B5659A /* Build configuration list for PBXNativeTarget "AuthUITests" */;
+			buildPhases = (
+				542A9C74FF2F077BA57214FD /* Sources */,
+				79E29F4FFE5B9F537E843CE4 /* Frameworks */,
+				D01D02F0BFC7ECE00BFFC9B9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				732F77D7234A51C2185E7FA0 /* PBXTargetDependency */,
+			);
+			name = AuthUITests;
+			productName = AuthUITests;
+			productReference = 829D667988F97E6ADAAE593F /* AuthUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -148,6 +207,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* ReactNativeGoogleSigninExample */,
+				A52E1BE90226306D9D074FA7 /* AuthUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -159,6 +219,14 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				CCD7B40BE769F95E4AD88738 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D01D02F0BFC7ECE00BFFC9B9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,12 +316,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		542A9C74FF2F077BA57214FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46A9C24B6B184F324C3CB408 /* AuthUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		732F77D7234A51C2185E7FA0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactNativeGoogleSigninExample;
+			target = 13B07F861A680F5B00A75B9A /* ReactNativeGoogleSigninExample */;
+			targetProxy = BCA4276DC51C15D22BDF92D9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-ReactNativeGoogleSigninExample.debug.xcconfig */;
+			baseConfigurationReference = 0C470E615CEA3D7F236D664D /* GoogleSignIn.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -271,7 +356,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "somesoap.reactnativegooglesignin.example";
+				PRODUCT_BUNDLE_IDENTIFIER = somesoap.reactnativegooglesignin.example;
 				PRODUCT_NAME = ReactNativeGoogleSigninExample;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -281,7 +366,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-ReactNativeGoogleSigninExample.release.xcconfig */;
+			baseConfigurationReference = 2C60E71C12D830C6345FD240 /* GoogleSignIn.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -298,12 +383,26 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "somesoap.reactnativegooglesignin.example";
+				PRODUCT_BUNDLE_IDENTIFIER = somesoap.reactnativegooglesignin.example;
 				PRODUCT_NAME = ReactNativeGoogleSigninExample;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
+		};
+		1A69B6D29F15BFE48CAD5C88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_BUNDLE_IDENTIFIER = somesoap.reactnativegooglesignin.example.AuthUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = ReactNativeGoogleSigninExample;
+			};
+			name = Debug;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -374,7 +473,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -439,7 +541,24 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F96409B8C7B6B4DFEDAD151D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_BUNDLE_IDENTIFIER = somesoap.reactnativegooglesignin.example.AuthUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = ReactNativeGoogleSigninExample;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -461,6 +580,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A462C7E008B9409495B5659A /* Build configuration list for PBXNativeTarget "AuthUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F96409B8C7B6B4DFEDAD151D /* Release */,
+				1A69B6D29F15BFE48CAD5C88 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

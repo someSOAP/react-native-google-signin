@@ -6,6 +6,9 @@ We want this community to be friendly and respectful to each other. Please follo
 
 ## Development workflow
 
+Agents should read [AGENTS.md](AGENTS.md), the [architecture guide](docs/architecture.md),
+and the [agent runbook](docs/agents.md) for native checks and OAuth evidence rules.
+
 This project is a monorepo managed using [Yarn workspaces](https://yarnpkg.com/features/workspaces). It contains the following packages:
 
 - The library package in the root directory.

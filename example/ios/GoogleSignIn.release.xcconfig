@@ -1,0 +1,2 @@
+#include "Pods/Target Support Files/Pods-ReactNativeGoogleSigninExample/Pods-ReactNativeGoogleSigninExample.release.xcconfig"
+#include "GoogleSignIn.xcconfig"

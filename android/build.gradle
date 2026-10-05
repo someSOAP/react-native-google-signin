@@ -18,6 +18,7 @@ buildscript {
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: "jacoco"
 
 apply plugin: "com.facebook.react"
 
@@ -34,6 +35,8 @@ android {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
   }
+
+  testOptions { unitTests.includeAndroidResources = true }
 
   buildFeatures {
     buildConfig true
@@ -72,9 +75,25 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.14.1"
+  implementation "com.google.android.gms:play-services-base:18.5.0"
   implementation "com.facebook.react:react-android"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.credentials:credentials:1.5.0"
   implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
   implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
+}
+
+// Coverage is diagnostic, not a substitute for the behavior matrix.
+jacoco { toolVersion = "0.8.12" }
+tasks.withType(Test).configureEach {
+  jacoco { includeNoLocationClasses = true; excludes = ["jdk.internal.*"] }
+}
+tasks.register("jacocoDebugReport", JacocoReport) {
+  dependsOn "testDebugUnitTest"
+  reports { xml.required = true; html.required = true }
+  sourceDirectories.setFrom(files("src/main/java"))
+  classDirectories.setFrom(fileTree(dir: "$buildDir/tmp/kotlin-classes/debug", excludes: ["**/BuildConfig.*"]))
+  executionData.setFrom(fileTree(dir: buildDir, includes: ["**/*.exec", "**/*.ec"]))
 }

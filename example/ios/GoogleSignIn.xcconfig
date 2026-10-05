@@ -1,0 +1,4 @@
+// Copy the public iOS OAuth client ID to GoogleSignIn.local.xcconfig.
+GOOGLE_IOS_CLIENT_ID = YOUR_IOS_CLIENT_ID.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.YOUR_IOS_CLIENT_ID
+#include? "GoogleSignIn.local.xcconfig"

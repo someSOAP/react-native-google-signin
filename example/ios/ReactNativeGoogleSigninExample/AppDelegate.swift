@@ -1,4 +1,5 @@
 import UIKit
+import GoogleSignIn
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
@@ -6,6 +7,12 @@ import ReactAppDependencyProvider
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
+
+  func application(_ app: UIApplication, open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    if GIDSignIn.sharedInstance.handle(url) { return true }
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
 
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
@@ -40,7 +47,8 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 
   override func bundleURL() -> URL? {
 #if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+    RCTBundleURLProvider.sharedSettings().jsBundleURL(
+      forBundleRoot: ProcessInfo.processInfo.arguments.contains("--google-signin-e2e") ? "index.e2e" : "index")
 #else
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif

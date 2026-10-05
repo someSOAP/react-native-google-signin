@@ -20,7 +20,7 @@ class MainApplication : Application(), ReactApplication {
               // add(MyReactNativePackage())
             }
 
-        override fun getJSMainModuleName(): String = "index"
+        override fun getJSMainModuleName(): String = if (BuildConfig.DEBUG && BuildConfig.GOOGLE_SIGNIN_E2E) "index.e2e" else "index"
 
         override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 

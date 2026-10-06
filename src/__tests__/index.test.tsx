@@ -34,6 +34,52 @@ test('omitted nonce remains omitted; absent optional profile is valid', async ()
   expect(native.getGoogleCredentials).toHaveBeenCalledWith(config);
 });
 test.each([
+  { flow: 'button', hostedDomain: 'example.com' },
+  { flow: 'bottomSheet' },
+  {
+    flow: 'bottomSheet',
+    filterByAuthorizedAccounts: false,
+    autoSelect: false,
+    hostedDomain: 'example.com',
+  },
+  { flow: 'bottomSheet', filterByAuthorizedAccounts: true, autoSelect: true },
+])(
+  'forwards Android settings and preserves explicit false: %p',
+  async (android) => {
+    native.getGoogleCredentials.mockResolvedValue({ idToken: 'token' });
+    await api.getGoogleSignInToken({ ...config, android } as never);
+    expect(native.getGoogleCredentials).toHaveBeenCalledWith({
+      ...config,
+      android,
+    });
+  }
+);
+test.each([
+  null,
+  [],
+  'bottomSheet',
+  {},
+  { flow: 'unknown' },
+  { flow: 'button', autoSelect: false },
+  { flow: 'button', filterByAuthorizedAccounts: false },
+  { flow: 'bottomSheet', autoSelect: 'false' },
+  { flow: 'bottomSheet', filterByAuthorizedAccounts: null },
+  { flow: 'button', hostedDomain: null },
+  { flow: 'bottomSheet', hostedDomain: '' },
+  { flow: 'bottomSheet', hostedDomain: 'https://example.com' },
+  { flow: 'bottomSheet', hostedDomain: '*.example.com' },
+  { flow: 'bottomSheet', hostedDomain: ' example.com' },
+  { flow: 'bottomSheet', hostedDomain: 'example..com' },
+  { flow: 'bottomSheet', hostedDomain: '-example.com' },
+])('invalid Android settings reject before native: %p', async (android) => {
+  await expect(
+    api.getGoogleSignInToken({ ...config, android } as never)
+  ).rejects.toMatchObject({
+    code: api.ErrorCodes.CONFIGURATION_ERROR,
+  });
+  expect(native.getGoogleCredentials).not.toHaveBeenCalled();
+});
+test.each([
   null,
   {},
   { serverClientId: '' },

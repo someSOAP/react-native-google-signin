@@ -16,7 +16,11 @@ codegen were checked on **RN 0.81.1 and 0.86.3**, Android API 24+ and iOS at the
 minimum required by your React Native version (15.1 for these versions).
 This is evidence for those versions, not a guarantee for every intervening RN
 release. GoogleSignIn iOS remains **9.x**; Android uses Credential Manager 1.5.0
-and googleid 1.1.1 with its Play Services provider.
+and [googleid 1.2.1](https://developers.google.com/identity/android-credential-manager/releases)
+with its Play Services provider. Android builds now use Kotlin
+2.4.20; older React Native templates must update their Kotlin Gradle plugin
+before rebuilding (see Android setup below). Earlier compatibility evidence
+predates this SDK update; see [current checks](docs/verification.md).
 
 ```tsx
 import {
@@ -49,14 +53,46 @@ its name and success shape: `idToken: string`, with optional `givenName`,
 `signOut(): Promise<void>` is additive. Types, `GoogleSignInError`,
 `GoogleSignInErrorCode`, and `isGoogleSignInError` are exported.
 
-Each call requests interactive credentials, including for returning accounts.
-Android uses `GetSignInWithGoogleOption`, which supports adding an account and
-provider reauthentication. There is no bottom-sheet or silent-restoration flow,
-so there is no fallback after cancellation. iOS uses the SDK's interactive flow
+By default Android uses `GetSignInWithGoogleOption`, which supports adding an
+account and provider reauthentication. Callers can instead request Credential
+Manager's bottom sheet with the Android-only `android` configuration below.
+Neither flow automatically falls back or retries after cancellation or missing
+credentials. iOS ignores these Android settings and uses the SDK's interactive flow
 without extra scopes or an account hint. Google controls consent, account
 selection, saved browser cookies, and reauthentication. To switch accounts,
 clear provider state with `signOut()` before another explicit sign-in; iOS may
 still offer accounts remembered by Google's browser.
+
+### Android flow options
+
+```tsx
+await getGoogleSignInToken({
+  serverClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+  nonce: nonceFromYourBackend,
+  android: {
+    flow: 'bottomSheet',
+    filterByAuthorizedAccounts: false,
+    autoSelect: false,
+    // hostedDomain: 'example.com', // optional Google Workspace domain filter
+  },
+});
+```
+
+| Option | Behavior |
+| --- | --- |
+| `android.flow` | Required when `android` is supplied: `'button'` or `'bottomSheet'`. Omit the entire `android` object to keep the button flow. |
+| `android.filterByAuthorizedAccounts` | Bottom sheet only; defaults to `true`. Use `false` to include device accounts that have not authorized the app. |
+| `android.autoSelect` | Bottom sheet only; defaults to `false`. `true` permits automatic selection when Google considers the account eligible. It does not initiate authentication at app startup. |
+| `android.hostedDomain` | Optional Google Workspace domain filter for either Android flow. Use a DNS domain such as `example.com`, with no URL, whitespace, or wildcard. Your backend still owns authorization and must validate the token's `hd` claim for domain-restricted access. |
+
+The exported `AndroidGoogleSignInOptions` type prevents combining button flow
+with bottom-sheet-only settings; invalid runtime combinations reject with
+`CONFIGURATION_ERROR` before provider UI. Google owns the appearance of both
+flows; these options cannot style the provider dialog or navigation area.
+The bottom sheet can return `NO_CREDENTIALS_ERROR` when no eligible accounts
+exist. Offer a separate caller-triggered button flow for adding an account or
+reauthentication; do not retry automatically after a dismissal. The example
+demonstrates the bottom sheet with account filtering and auto-selection disabled.
 
 Only one sign-in or sign-out may run per module. Overlapping requests reject
 with `IN_PROGRESS`. Every accepted request settles once; duplicates and stale
@@ -82,6 +118,18 @@ error descriptions. Never print credentials in your app.
    signing SHA-1**, including debug and release / Play App Signing certificates.
 3. Use a device with supported, enabled, up-to-date Google Play Services. The
    library checks availability before invoking Credential Manager.
+4. Use Kotlin **2.4.20** for the tested Android configuration. googleid 1.2.1
+   contains Kotlin 2.4 metadata that the previous Kotlin 2.1 compiler cannot read.
+   In your Android root `build.gradle`, update `ext.kotlinVersion` and explicitly
+   version the plugin dependency if your React Native template leaves it unversioned:
+
+   ```groovy
+   kotlinVersion = "2.4.20" // inside buildscript.ext
+   // inside buildscript.dependencies:
+   classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+   ```
+
+   Rebuild the native app after upgrading the SDK or using the new options.
 
 `google-services.json` and the Google Services Gradle plugin are not required
 by this library. An OAuth registration mismatch can still be rejected by Google
@@ -153,8 +201,8 @@ sanitized, so do not rely on raw provider descriptions.
 Existing `GET_CREDENTIALS_ERROR` and `CANCELLATION_ERROR` values are preserved;
 previously unexported Android `NO_CREDENTIALS_ERROR`, `UNKNOWN_CREDENTIALS_TYPE`
 and `ERR_ACTIVITY` are now exported. Previous generic `ERROR` configuration
-failures become `CONFIGURATION_ERROR`. Android now shows the explicit button
-flow instead of the authorized-account-only bottom sheet. Concurrent calls now
+failures become `CONFIGURATION_ERROR`. Android defaults to the explicit button
+flow; the bottom sheet is opt-in through `android.flow`. Concurrent calls now
 reject; callers should disable the sign-in button while awaiting a result.
 Optional fields no longer contain null or the literal string `"null"`.
 Rebuild your native app after upgrading: the new `signOut` TurboModule method
@@ -181,12 +229,11 @@ to check RN 0.86.3 without changing the main workspace's dependencies.
   and the SDK location (`ANDROID_HOME` or ignored `example/android/local.properties`)
   for your machine. Make `adb` available on your PATH and accept SDK licenses.
   Boot an emulator or connect an authorized device. A Google Play image is
-  required for real Google sign-in; `Pixel_8_API_35` was used for verification.
+  required for real Google sign-in.
 - iOS: macOS, Xcode with its command-line tools selected, an installed iOS
   simulator runtime, and Ruby/Bundler. Install CocoaPods through the example's
-  Gemfile as shown below. CI is configured for Xcode **26.3**; verification used
-  an iPhone 16e simulator. Physical-device signing is separate from these
-  simulator instructions.
+  Gemfile as shown below. CI is configured for Xcode **26.3**. Physical-device
+  signing is separate from these simulator instructions.
 - Dependency installation and initial native builds need access to the package,
   Maven, and CocoaPods sources. Simulated E2E needs no Google account or OAuth
   registration; real Google login needs both.
@@ -250,10 +297,10 @@ Use another terminal at the repository root. Discover your devices first, then
 substitute the Android serial or iOS simulator UDID in the launch commands:
 
 ```sh
-# Android: boot the emulator first; replace emulator-5554 if necessary.
+# Android: boot an emulator or connect a device; replace YOUR_ANDROID_SERIAL.
 adb devices
-adb -s emulator-5554 reverse tcp:8081 tcp:8081
-yarn example android --device emulator-5554
+adb -s YOUR_ANDROID_SERIAL reverse tcp:8081 tcp:8081
+yarn example android --device YOUR_ANDROID_SERIAL
 
 # iOS: choose an available simulator and replace YOUR_SIMULATOR_UDID.
 xcrun simctl list devices available
@@ -282,8 +329,8 @@ Run one platform at a time from the repository root:
 ```sh
 # Android: select a connected, unlocked emulator/device and allow Metro access.
 adb devices
-adb -s emulator-5554 reverse tcp:8081 tcp:8081
-ANDROID_SERIAL=emulator-5554 yarn e2e:android
+adb -s YOUR_ANDROID_SERIAL reverse tcp:8081 tcp:8081
+ANDROID_SERIAL=YOUR_ANDROID_SERIAL yarn e2e:android
 
 # iOS: select an installed simulator runtime; replace the UDID.
 xcrun simctl list devices available
@@ -300,7 +347,7 @@ assertions. The scripts return a failing exit code if an assertion fails.
 
 Android reports are under `example/android/app/build/reports/androidTests`;
 iOS test results are under `example/ios/build/Logs/Test`. After Android E2E,
-restore the normal build with `yarn example android --device emulator-5554`
+restore the normal build with `yarn example android --device YOUR_ANDROID_SERIAL`
 without the E2E property. For iOS, launch with
 `yarn example ios --udid YOUR_SIMULATOR_UDID` without the E2E launch argument.
 
@@ -323,8 +370,11 @@ yarn prepare
 yarn test:android
 # Optional native coverage:
 # cd example/android && ./gradlew :somesoap_react-native-google-signin:jacocoDebugReport
-IOS_TEST_DESTINATION='platform=iOS Simulator,name=iPhone 16e' yarn test:ios
+yarn test:ios
 ```
+
+The iOS test scripts automatically select a booted or available iOS simulator.
+Set `IOS_TEST_DESTINATION` to override that selection.
 
 The native suites exercise the production request coordinators with SDK
 boundaries replaced by controllable fakes. JS tests exercise the real wrapper

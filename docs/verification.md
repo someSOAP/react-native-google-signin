@@ -3,6 +3,271 @@
 Date: **2026-10-05** (Europe/Belgrade). A passed fake-provider test does not mean
 real Google OAuth passed. Each layer's evidence is recorded separately.
 
+## Version 1.1.0 and repository hygiene: 2026-10-06
+
+The package version is **1.1.0**. Test-device names, models, serials and UDIDs
+were removed from tracked documentation, scripts and CI; command examples use
+placeholders. AGENTS.md now requires that these details remain outside the repo.
+The iOS test scripts discover an available simulator at runtime, preferring a
+booted one, while preserving the `IOS_TEST_DESTINATION` override.
+
+On macOS, with the workspace at RN **0.81.1**, these checks passed:
+
+- CocoaPods **1.16.2** `pod install` from `example/ios`, including codegen;
+  the lockfile's library version and podspec checksum were regenerated.
+- `yarn prepare` and `yarn pack --out /private/tmp/google-signin-1.1.0.tgz`;
+  archive inspection confirmed version, native sources and declarations, with
+  local OAuth configuration, build output and native tests excluded.
+- `npm publish /private/tmp/google-signin-1.1.0.tgz --dry-run --ignore-scripts
+  --access public` with a temporary npm cache; validation passed without
+  publishing anything.
+- Nine synthetic-fixture checks of simulator discovery and both shell wrappers:
+  booted preference, available fallback, exclusion of other platforms and
+  unavailable devices, no-simulator failure, and explicit override forwarding.
+- Shell/Node syntax, local Markdown links, whitespace and repository/archive
+  scans for private application, device and local OAuth identifiers.
+
+These packaging and script checks did not rerun native builds, XCTest, UI E2E
+or real OAuth. Their earlier evidence remains in the dated sections below.
+
+## Example bottom-sheet OAuth recheck: 2026-10-06
+
+This recheck supersedes the earlier no-credential/presentation gap for the
+googleid 1.2.1 example on the existing development account. Mobile Dev exercised
+this repository's normal source-linked example, RN **0.81.1**, on
+**Android 15**, using an ignored local OAuth
+configuration and registered test identity (`YOUR_REGISTERED_TEST_PACKAGE`).
+
+The example APK's signing certificate was verified, and
+`:app:assembleDebug -PreactNativeArchitectures=arm64-v8a` passed. Metro on
+**8081** was confirmed to serve this repository's example.
+
+| Current real-provider scenario | Result |
+| --- | --- |
+| Bottom sheet, `filterByAuthorizedAccounts: false`, `autoSelect: false` | **Passed**: Google bottom sheet appeared with the existing account and Continue button |
+| Deliberate dismissal | **Passed**: `Cancelled; ready to retry`; no fallback or automatic second UI |
+| Explicit retry and account confirmation | **Passed**: safe `Google credentials received` app status after production token guards accepted the result |
+| Provider sign-out after credentials | **Passed**: `Google provider signed out` |
+| Sign-in after provider cleanup | **Passed**: bottom sheet reopened and account confirmation returned credentials again |
+| `autoSelect: true`, authorized-account filtering omitted/default true | **Passed** for this eligible returning account: credentials returned after tapping Sign in, with no additional confirmation input |
+
+The example source was restored to its documented filtering/auto-selection
+disabled settings after the temporary comparison.
+No Google account was removed, consent was not revoked, and token values were
+not inspected, logged or recorded. The example does not perform a Firebase or
+backend token exchange. DNS resolution of Google's hostname now succeeds;
+this and the successful retry do not prove the sole cause of the earlier errors.
+
+Remote console configuration was not inspected. Hosted-domain restrictions,
+first-time consent, a second account, account-free/reauthentication devices,
+iOS OAuth, release builds and backend signature/audience/nonce verification remain unverified in
+this recheck. Earlier automated suites/build compatibility evidence is recorded
+separately below and was not rerun for these runtime-only checks.
+
+## googleid 1.2.1 and Android flow options: 2026-10-06
+
+This section records checks of the SDK/options changes. The earlier sections
+below describe older source and are historical evidence only.
+
+Android now uses **googleid 1.2.1**, Credential Manager / Play Services adapter
+**1.5.0**, and **Kotlin 2.4.20**. The previous Kotlin compiler failed on the new
+SDK's 2.4 metadata; the library default and example plugin were upgraded, then
+the builds below passed. GoogleSignIn on iOS remains **9.0.0**.
+
+The default request still constructs `GetSignInWithGoogleOption`. The optional
+`android.flow: 'bottomSheet'` constructs `GetGoogleIdOption`; native boundary
+tests inspect the real SDK options, nonce, hosted domain, filtering and
+auto-selection settings. JS/native validation rejects invalid combinations
+before provider UI. Cancellation and no-credential results settle once without
+fallback. Email mapping uses the new SDK's email value rather than its legacy ID.
+
+Host: Node **22.12.0** for RN **0.81.1**, Node **24.16.0** for the isolated
+RN **0.86.3** snapshot; JDK **17**, Kotlin **2.4.20**, Gradle **8.14.3** and
+CocoaPods **1.15.2**. The compatibility snapshot excluded local OAuth files.
+
+| Check | RN 0.81.1 | RN 0.86.3 |
+| --- | --- | --- |
+| `yarn typecheck`, `yarn test --runInBand`, `yarn prepare` | **Passed**, 53 JS cases | **Passed**, 53 JS cases |
+| `yarn lint` | **Passed**, zero errors; two existing example debugger warnings | **Not rerun** in the snapshot |
+| Android `testDebugUnitTest` and `:app:assembleDebug`, arm64-v8a | **Passed**, 25 native cases and generated bindings | **Passed**, 25 native cases and generated bindings |
+| iOS Pod install/codegen and generic simulator `xcodebuild` | **Passed** | **Passed**, with RN prebuilt dependencies enabled |
+| Markdown local links and `git diff --check` | **Passed** | Same source documentation |
+
+Android retry ran on **Android 15**,
+Google Play Services **26.37.35**, and the normal RN **0.81.1** example with the
+existing user-selected test identity (`YOUR_REGISTERED_TEST_PACKAGE`). The
+user removed the example installations before this reinstall. Metro served the
+source-linked example on port **8081**; a full reload confirmed the final
+bottom-sheet configuration with filtering and auto-selection disabled.
+
+| Current real-provider check | Result |
+| --- | --- |
+| Updated button flow UI and deliberate dismissal | **Passed**: Google chooser appeared; dismissal returned `Cancelled; ready to retry` without a second flow |
+| Final bottom-sheet request | **Observed**: `NO_CREDENTIALS_ERROR`, controls available for explicit retry, no automatic fallback UI |
+| Bottom-sheet presentation / successful credentials | **Not verified** on this run |
+
+The emulator could not resolve `www.google.com` (`ping: unknown host`) and
+provider logs reported DNS failures. These may contribute to the provider's
+no-credential result; the returned code alone does not establish its cause.
+No account was removed, device data was not erased, and token values were not
+inspected or recorded. A complete OAuth round trip, hosted-domain filtering and
+auto-selection with real eligible accounts remain unverified for this SDK update.
+iOS runtime/XCTest, deterministic UI E2E, RN 0.86.3 runtime and release builds
+were not rerun; native builds/codegen and controllable-boundary tests are the
+current evidence. Existing successful OAuth evidence below predates the update.
+
+Commands actually run for the native checks:
+
+```sh
+cd example/android
+./gradlew :somesoap_react-native-google-signin:testDebugUnitTest :app:assembleDebug -PreactNativeArchitectures=arm64-v8a
+./gradlew :app:installDebug -PreactNativeArchitectures=arm64-v8a
+
+cd ../ios
+pod install
+xcodebuild -workspace ReactNativeGoogleSigninExample.xcworkspace -scheme ReactNativeGoogleSigninExample -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+```
+
+The same test/build commands passed in the RN 0.86.3 snapshot, with
+`RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 pod install` for its iOS integration.
+SDK version reference: [Google release notes](https://developers.google.com/identity/android-credential-manager/releases).
+
+## Successful development-package recheck: 2026-10-06
+
+This later run supersedes the unsuccessful same-day package checks below for
+the registered development test identity. The example's local Gradle
+configuration used that identity (`YOUR_REGISTERED_DEV_PACKAGE` here), and the
+installed package was confirmed to be this verification example. Its existing
+`serverClientId` matched the Web client in the supplied development JSON.
+
+Platform: **Android 15**, **RN 0.81.1**.
+Mobile Dev exercised the normal provider app using the existing development
+account. Metro on **8081** was confirmed to serve this repository's example.
+
+| Real Google scenario | Result |
+| --- | --- |
+| Deliberate chooser cancellation | **Passed**: `Cancelled; ready to retry`, no automatic second flow observed |
+| Explicit retry after cancellation | **Passed**: chooser reopened; account selection returned `Google credentials received` |
+| Provider sign-out after successful sign-in | **Passed**: `Google provider signed out` |
+| Sign-in after provider cleanup | **Passed**: chooser reopened; selecting the same account returned credentials again |
+
+Success was observed through safe app status after the production native and JS
+guards accepted the result. Token contents were not inspected, logged, displayed,
+or copied into the report. No backend signature/audience/nonce verification or
+consumer app session was exercised. A second account, first-time consent,
+account-free/reauthentication devices, release builds, and iOS remain unverified
+in this run. The earlier reauthentication diagnostics do not prove an account
+problem; the corrected development package succeeded without account resets.
+
+The separate simulated UI E2E suite also **passed**:
+`AuthUiTest.cancellationFailureRetryAndLogout`, **1 test**, **0 failures/errors**,
+with all **7 status assertions** (cancellation/retry, success, failure/retry,
+logout failure/success, and sign-in after logout). The XML report is under
+`example/android/app/build/outputs/androidTest-results/connected/debug`; the
+HTML report is under `example/android/app/build/reports/androidTests`.
+These assertions exercise simulated app actions, not Google OAuth.
+
+Commands actually run from `example/android`, with the existing example Metro
+server on port 8081 and `ANDROID_SERIAL=YOUR_ANDROID_SERIAL` for the connected test:
+
+```sh
+./gradlew :app:connectedDebugAndroidTest -PgoogleSigninE2E=true -PreactNativeArchitectures=arm64-v8a
+./gradlew :app:assembleDebug -PreactNativeArchitectures=arm64-v8a
+```
+
+The normal real-provider APK was installed and relaunched after the simulated
+suite; its ordinary verification heading and `Ready` status were confirmed.
+The user's existing Gradle and App.tsx debugging edits and local OAuth JSON were
+preserved, checked against pre-test SHA-256 digests. The existing Metro server
+was retained. No consumer app was replaced, account removed, or device reset.
+Native unit tests and iOS E2E were not rerun. Local Markdown links and
+`git diff --check` passed.
+
+## Android real OAuth recheck: 2026-10-06
+
+**Package-selection correction:** the first recheck below selected a different
+package listed in the supplied consumer JSON, rather than the consumer's Gradle
+application ID. Its result does not verify the intended consumer identity.
+The corrected retry is recorded separately below. Reauthentication-related
+provider messages do not establish that the account itself is the root cause.
+
+RN **0.81.1**, Android **15**. The supplied
+consumer development `google-services.json` contained an Android registration
+matching the example debug certificate. Its Web client ID already matched the
+ignored local example configuration; local OAuth files were left unchanged.
+The registered package held a previous build of this verification example,
+identified by its example launcher activity. That APK was backed up before the
+test build was installed; no consumer app or device account was replaced.
+
+The normal real-provider build passed with:
+
+```sh
+cd example/android
+./gradlew :app:assembleDebug -PgoogleSigninApplicationId=YOUR_REGISTERED_TEST_PACKAGE -PreactNativeArchitectures=arm64-v8a -PreactNativeDevServerPort=8082
+# Separate terminal, repository root:
+yarn example start --port 8082
+```
+
+Port 8081 belonged to another project. Mobile Dev exercised the real provider:
+the chooser appeared, deliberate Back cancellation returned
+`Cancelled; ready to retry`, and explicit retries reopened the chooser.
+Three account-selection attempts returned cancellation, including one after
+successful provider sign-out (`Google provider signed out`). Sanitized Google
+diagnostics contained reauthentication-related errors and status 16. The device
+reported a validated Internet connection; this does not prove every Google
+endpoint was reachable or establish the underlying cause of those errors.
+
+**Successful credentials were not obtained in this recheck.** Success after
+account reauthentication, logout after successful sign-in, and successful
+sign-in after logout remain unverified in this run. The earlier successful
+Android OAuth evidence below is historical and does not establish success today.
+No simulated UI E2E, native regression suite, iOS OAuth, or backend token exchange
+was run for this check.
+
+Cleanup passed: the previous verification APK was restored and its bytes checked
+against the backup. A fresh `:app:assembleDebug -PreactNativeArchitectures=arm64-v8a`
+build restored the default application ID and Metro port. The temporary Metro
+server and reverse-port mapping were removed, along with the temporary Google
+configuration copy. Source defaults and local OAuth configuration were unchanged.
+The report's local Markdown links and `git diff --check` passed.
+
+### Corrected application-ID retry: 2026-10-06
+
+The consumer's `android/app/build.gradle` sets the requested base application ID;
+its development flavor adds `.dev`. This retry used the exact requested base ID,
+represented here as `YOUR_REQUESTED_BASE_PACKAGE`, without the development suffix.
+The supplied development JSON lists the consumer's suffixed package with a Web
+OAuth client but no Android OAuth entry; it has no client entry for the requested
+base package. The example's existing `serverClientId` matches that Web client.
+This describes the supplied file, not the current state of Google Cloud's
+registrations. The JSON was consulted as configuration data and was not bundled
+or processed by a Google Services Gradle plugin in the verification example.
+
+The base package was absent from the selected emulator before installation. On
+the same RN 0.81.1 / Android 15 device, the following normal provider build passed:
+
+```sh
+cd example/android
+./gradlew :app:assembleDebug -PgoogleSigninApplicationId=YOUR_REQUESTED_BASE_PACKAGE -PreactNativeArchitectures=arm64-v8a -PreactNativeDevServerPort=8082
+# Separate terminal, repository root:
+yarn example start --port 8082
+```
+
+The installed example's foreground package was checked against the requested
+base ID. Mobile Dev opened the real Google chooser and selected the existing
+account. The app returned `Cancelled; ready to retry`; **no successful credentials
+were obtained**. Diagnostics limited to this attempt contained
+reauthentication-related errors and status 16. The underlying cause remains
+unverified. Provider sign-out, successful sign-in after cleanup, simulated UI
+E2E, native regression suites, iOS, and backend token exchange were not repeated
+in this corrected retry.
+
+Cleanup passed: only the temporary example installed by this retry was removed,
+and its package absence was checked. The Metro server and reverse-port mapping
+were removed. A normal `:app:assembleDebug -PreactNativeArchitectures=arm64-v8a`
+build restored the default package and Metro port. The local OAuth JSON matched
+its pre-run SHA-256 digest. Local Markdown link and whitespace checks passed.
+
 ## Scope and pre-implementation audit
 
 Audited target: `@somesoap/react-native-google-signin` **0.2.0**, RN **0.81.1**,
@@ -14,7 +279,7 @@ Existing runner: Jest with a placeholder test in each repository; no native test
 Example native autolinking and Metro resolve the target source root.
 Existing untracked Google configuration files were preserved.
 
-The release version was bumped to **1.0.0** on **2026-10-06**. This metadata-only
+The release version was bumped to **1.1.0** on **2026-10-06**. This metadata-only
 bump does not represent a new run of the behavior checks recorded below.
 
 The matrix was created before implementation and extended for missing callbacks,
@@ -87,7 +352,7 @@ RN 0.81.1. That copy was refreshed with final library source before final builds
 | --- | --- | --- |
 | RN 0.81.1 codegen + example native build | **Passed**: Gradle assembleDebug, arm64-v8a | **Passed**: Pod install/codegen + xcodebuild simulator build |
 | RN 0.86.3 codegen + example native build | **Passed**: Gradle assembleDebug, arm64-v8a; 19 native cases | **Passed**: Pod install/codegen + xcodebuild simulator build; GoogleSignIn 9.0.0 retained |
-| Runtime launch RN 0.81.1 | **Passed**: Pixel_8_API_35 / emulator-5554, Android 15 | **Passed**: iPhone 16e, iOS 26.1 |
+| Runtime launch RN 0.81.1 | **Passed**: Android 15 | **Passed**: iOS 26.1 |
 | Runtime launch RN 0.86.3 | **Not verified**: build only | **Not verified**: build only |
 | Deterministic example UI E2E | **Passed**: UiAutomator `cancellationFailureRetryAndLogout`, 1 case with 7 status assertions | **Passed**: XCUITest `testCancellationFailureRetryAndLogout`, 1 case with 7 status assertions |
 | Physical device / release build | **Not verified** | **Not verified** |
@@ -171,13 +436,13 @@ yarn pack --out /private/tmp/somesoap-google-signin-review.tgz
 cd example/android
 ./gradlew :somesoap_react-native-google-signin:testDebugUnitTest :app:assembleDebug -PreactNativeArchitectures=arm64-v8a
 ./gradlew :somesoap_react-native-google-signin:jacocoDebugReport  # 19 passed
-ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedDebugAndroidTest -PgoogleSigninE2E=true -PreactNativeArchitectures=arm64-v8a
+ANDROID_SERIAL=YOUR_ANDROID_SERIAL ./gradlew :app:connectedDebugAndroidTest -PgoogleSigninE2E=true -PreactNativeArchitectures=arm64-v8a
 # 1 UI E2E passed; normal variant restored afterward
 # Real OAuth used an unused matching test identity after checking its absence:
 ./gradlew :app:assembleDebug -PgoogleSigninApplicationId=YOUR_REGISTERED_TEST_PACKAGE -PreactNativeArchitectures=arm64-v8a
 # Debug certificate matches the supplied Android OAuth registration; real token obtained
 
-# Repository root, iPhone 16e selected in Mobile Dev:
+# Repository root, selected iOS simulator:
 IOS_TEST_DESTINATION='platform=iOS Simulator,id=YOUR_SIMULATOR_UDID' yarn test:ios
 # 15 XCTest cases passed; code coverage enabled
 IOS_TEST_DESTINATION='platform=iOS Simulator,id=YOUR_SIMULATOR_UDID' yarn e2e:ios

@@ -25,13 +25,18 @@ class ReactNativeGoogleSigninModule(reactContext: ReactApplicationContext) :
     // Read the map before posting: no borrowed JS arguments escape the invocation.
     val serverClientId: String?
     val nonce: String?
+    val options: AndroidSignInOptions
     try {
       serverClientId = configs.getString("serverClientId")
       nonce = if (configs.hasKey("nonce") && !configs.isNull("nonce")) configs.getString("nonce") else null
+      options = if (configs.hasKey("android")) {
+        require(!configs.isNull("android"))
+        AndroidSignInOptions.fromMap(requireNotNull(configs.getMap("android")))
+      } else AndroidSignInOptions()
     } catch (_: Exception) {
-      promise.reject("CONFIGURATION_ERROR", "Expected string client ID and nonce."); return
+      promise.reject("CONFIGURATION_ERROR", "Invalid Google sign-in configuration."); return
     }
-    main.post { manager.getGoogleCredentials(reactApplicationContext.currentActivity, serverClientId, nonce, callback(promise)) }
+    main.post { manager.getGoogleCredentials(reactApplicationContext.currentActivity, serverClientId, nonce, callback(promise), options) }
   }
   override fun signOut(promise: Promise) { main.post { manager.signOut(callback(promise)) } }
   override fun onHostResume() = Unit

@@ -46,6 +46,10 @@ Applies to this repository, including the source-linked example and test project
 - Use placeholders for identifiers copied from local OAuth configuration in
   committed docs, examples, and reports, including project IDs, client IDs,
   registered package overrides, API keys, and certificate fingerprints.
+- Do not save testing device or emulator names, models, serials, or UDIDs in
+  tracked files, including scripts, CI, reports, screenshots, and logs. Use
+  placeholders or runtime discovery; record platform, OS, RN, and SDK versions
+  without identifying the device used.
 
 ## Validation and delivery
 

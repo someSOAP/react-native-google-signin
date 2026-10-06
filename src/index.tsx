@@ -1,10 +1,15 @@
 import NativeGoogleSignin from './NativeReactNativeGoogleSignin';
 import type {
-  GetGoogleCredentialsConfigs,
   GetGoogleCredentialsResponse,
+  NativeAndroidSignInOptions,
 } from './NativeReactNativeGoogleSignin';
+import type { GetGoogleCredentialsConfigs } from './types';
 
-export type { GetGoogleCredentialsConfigs, GetGoogleCredentialsResponse };
+export type {
+  GetGoogleCredentialsConfigs,
+  AndroidGoogleSignInOptions,
+} from './types';
+export type { GetGoogleCredentialsResponse };
 
 export const ErrorCodes = {
   GET_CREDENTIALS_ERROR: 'GET_CREDENTIALS_ERROR',
@@ -57,7 +62,40 @@ function validClientId(value: unknown): value is string {
   );
 }
 
-/** Interactive Google button flow. Google owns consent and reauthentication. */
+function validAndroidOptions(
+  value: unknown
+): value is NativeAndroidSignInOptions {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const options = value as NativeAndroidSignInOptions;
+  if (options.flow !== 'button' && options.flow !== 'bottomSheet') return false;
+  if (
+    (options.filterByAuthorizedAccounts !== undefined &&
+      typeof options.filterByAuthorizedAccounts !== 'boolean') ||
+    (options.autoSelect !== undefined &&
+      typeof options.autoSelect !== 'boolean') ||
+    (options.flow === 'button' &&
+      (options.filterByAuthorizedAccounts !== undefined ||
+        options.autoSelect !== undefined))
+  )
+    return false;
+  if (options.hostedDomain !== undefined) {
+    const domain = options.hostedDomain;
+    if (
+      typeof domain !== 'string' ||
+      domain.length > 253 ||
+      !domain.includes('.') ||
+      !domain
+        .split('.')
+        .every((label) =>
+          /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(label)
+        )
+    )
+      return false;
+  }
+  return true;
+}
+
+/** Google owns presentation, consent and reauthentication for the selected flow. */
 export async function getGoogleSignInToken(
   configs: GetGoogleCredentialsConfigs
 ): Promise<GetGoogleCredentialsResponse> {
@@ -67,7 +105,8 @@ export async function getGoogleSignInToken(
     (configs.iosClientId !== undefined &&
       !validClientId(configs.iosClientId)) ||
     (configs.nonce !== undefined &&
-      (typeof configs.nonce !== 'string' || !configs.nonce.trim()))
+      (typeof configs.nonce !== 'string' || !configs.nonce.trim())) ||
+    (configs.android !== undefined && !validAndroidOptions(configs.android))
   ) {
     throw new GoogleSignInError(ErrorCodes.CONFIGURATION_ERROR);
   }
@@ -78,6 +117,21 @@ export async function getGoogleSignInToken(
         iosClientId: configs.iosClientId,
       }),
       ...(configs.nonce !== undefined && { nonce: configs.nonce }),
+      ...(configs.android !== undefined && {
+        android: {
+          flow: configs.android.flow,
+          ...(configs.android.hostedDomain !== undefined && {
+            hostedDomain: configs.android.hostedDomain,
+          }),
+          ...(configs.android.filterByAuthorizedAccounts !== undefined && {
+            filterByAuthorizedAccounts:
+              configs.android.filterByAuthorizedAccounts,
+          }),
+          ...(configs.android.autoSelect !== undefined && {
+            autoSelect: configs.android.autoSelect,
+          }),
+        },
+      }),
     });
     if (
       !result ||

@@ -14,7 +14,15 @@ interface Actions {
   signOut(): Promise<void>;
 }
 const realActions: Actions = {
-  signIn: () => getGoogleSignInToken(config),
+  signIn: () =>
+    getGoogleSignInToken({
+      ...config,
+      android: {
+        flow: 'bottomSheet',
+        filterByAuthorizedAccounts: false,
+        autoSelect: false,
+      },
+    }),
   signOut,
 };
 
@@ -42,6 +50,7 @@ export function AuthScreen({ actions }: { actions: Actions }) {
         );
       }
     } catch (error) {
+      console.log(error);
       setStatus(
         isGoogleSignInError(error)
           ? error.code === ErrorCodes.CANCELLATION_ERROR

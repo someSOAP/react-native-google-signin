@@ -27,9 +27,17 @@ the package or rename it incidentally during an authentication fix.
 Android's `GoogleSignInManager` receives a `GoogleCredentialProvider`. The real
 adapter checks Google Play Services and uses Credential Manager async APIs with
 a main-thread executor and `CancellationSignal`. The manager always builds
-`GetSignInWithGoogleOption` for the button. No authorized-only bottom sheet,
-silent restore, fallback, or automatic retry is retained. It accepts only the
+`GetSignInWithGoogleOption` by default. An explicit `android.flow: 'bottomSheet'`
+selects `GetGoogleIdOption`, with authorized-account filtering defaulting to true
+and auto-selection defaulting to false. Both options forward nonce unchanged and
+support the optional hosted-domain filter. The public TypeScript flow union and
+JS/native validation reject bottom-sheet settings on button requests before UI.
+The codegen schema uses a single nested object; the Android bridge copies its
+values before posting to main. iOS ignores that object. No silent restore,
+fallback, or automatic retry is retained. It accepts only the
 Google ID-token custom credential type and parses it with Google's SDK.
+googleid 1.2.1 parses email separately from the legacy ID; only its nonblank email
+value is returned as `email`. Missing email is omitted, like other optional fields.
 
 iOS's `GSAuthCoordinator` receives a `GSAuthProvider`. The real adapter uses
 GoogleSignIn 9.x, configures the iOS and Web/server client IDs, and starts the

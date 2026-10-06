@@ -13,6 +13,7 @@ import androidx.credentials.exceptions.ClearCredentialException
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import org.json.JSONObject
 import java.util.concurrent.Executor
@@ -78,10 +79,11 @@ internal class GoogleSignInManager(
     if (code != null) operation.callback.reject(code) else operation.callback.resolve(result)
   }
 
-  fun getGoogleCredentials(activity: Activity?, serverClientId: String?, nonce: String?, callback: AuthCallback) {
+  fun getGoogleCredentials(activity: Activity?, serverClientId: String?, nonce: String?, callback: AuthCallback,
+                          options: AndroidSignInOptions = AndroidSignInOptions()) {
     val operation = begin(callback) ?: return
     if (serverClientId == null || !CLIENT_ID.matches(serverClientId) ||
-        (nonce != null && nonce.isBlank())) {
+        (nonce != null && nonce.isBlank()) || !options.isValid()) {
       finish(operation, code = "CONFIGURATION_ERROR"); return
     }
     if (activity == null || activity.isFinishing || activity.isDestroyed) {
@@ -89,7 +91,16 @@ internal class GoogleSignInManager(
     }
     try {
       if (!provider.available()) { finish(operation, code = "PROVIDER_UNAVAILABLE"); return }
-      val option = GetSignInWithGoogleOption.Builder(serverClientId).setNonce(nonce).build()
+      val option = if (options.flow == "bottomSheet") {
+        GetGoogleIdOption.Builder().setServerClientId(serverClientId).setNonce(nonce)
+          .setFilterByAuthorizedAccounts(options.filterByAuthorizedAccounts ?: true)
+          .setAutoSelectEnabled(options.autoSelect ?: false)
+          .setHostedDomainFilter(options.hostedDomain).build()
+      } else {
+        GetSignInWithGoogleOption.Builder(serverClientId).setNonce(nonce).apply {
+          options.hostedDomain?.let { setHostedDomainFilter(it) }
+        }.build()
+      }
       val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
       provider.get(activity, request, operation.signal,
         object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
@@ -105,7 +116,8 @@ internal class GoogleSignInManager(
               if (!validToken(google.idToken)) {
                 finish(operation, code = "INVALID_TOKEN_ERROR"); return
               }
-              val response = mutableMapOf("idToken" to google.idToken, "email" to google.id)
+              val response = mutableMapOf("idToken" to google.idToken)
+              google.email?.takeIf { it.isNotBlank() }?.let { response["email"] = it }
               google.givenName?.let { response["givenName"] = it }
               google.familyName?.let { response["familyName"] = it }
               google.profilePictureUri?.let { response["profilePictureUri"] = it.toString() }

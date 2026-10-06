@@ -51,11 +51,16 @@ class GoogleSignInManagerTest {
       thrown?.let { throw it }; clears++; this.signal = signal; clearCallback = callback
     }
   }
-  private fun start(nonce: String? = null): Result = Result().also {
-    manager.getGoogleCredentials(activity, client, nonce, it)
+  private fun start(nonce: String? = null, options: AndroidSignInOptions = AndroidSignInOptions()): Result = Result().also {
+    manager.getGoogleCredentials(activity, client, nonce, it, options)
   }
   private fun success(tokenValue: String = token) {
-    provider.getCallback.onResult(GetCredentialResponse(GoogleIdTokenCredential.Builder().setId("test@example.com").setIdToken(tokenValue).build()))
+    // Construct the real provider bundle, then vary the token at the SDK boundary.
+    // 1.2.1 rejects malformed tokens in its builder as well as createFrom().
+    val data = GoogleIdTokenCredential.Builder().setId("test@example.com").setIdToken(token).build().data
+    val tokenKey = data.keySet().single { data.get(it) == token }
+    data.putString(tokenKey, tokenValue)
+    provider.getCallback.onResult(GetCredentialResponse(CustomCredential(GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL, data)))
   }
   @Test fun buttonOptionForFirstAndReturningUsersForwardsClientAndNonce() {
     val result = start("caller nonce")
@@ -67,6 +72,76 @@ class GoogleSignInManagerTest {
   @Test fun optionalProfileDoesNotBecomeNullString() {
     val result = start(); success()
     assertFalse(result.value!!.containsKey("profilePictureUri")); assertFalse(result.value!!.containsKey("givenName"))
+    assertFalse(result.value!!.containsKey("email")) // No email claim; legacy SDK ID is not an email.
+  }
+  @Test fun bottomSheetDefaultsAndExplicitSettingsReachGoogleOption() {
+    var result = start("caller nonce", AndroidSignInOptions(flow = "bottomSheet"))
+    var option = provider.request.credentialOptions.single() as GetGoogleIdOption
+    assertEquals(client, option.serverClientId); assertEquals("caller nonce", option.nonce)
+    assertTrue(option.filterByAuthorizedAccounts); assertFalse(option.autoSelectEnabled)
+    success(); assertEquals(1, result.settles)
+    for (filter in listOf(false, true)) for (auto in listOf(false, true)) {
+      result = start(options = AndroidSignInOptions("bottomSheet", filter, auto, "example.com"))
+      option = provider.request.credentialOptions.single() as GetGoogleIdOption
+      assertEquals(filter, option.filterByAuthorizedAccounts); assertEquals(auto, option.autoSelectEnabled)
+      assertEquals("example.com", option.hostedDomainFilter)
+      success(); assertEquals(1, result.settles)
+    }
+  }
+  @Test fun buttonHostedDomainDoesNotChangeFlow() {
+    start(options = AndroidSignInOptions(hostedDomain = "example.com"))
+    val option = provider.request.credentialOptions.single() as GetSignInWithGoogleOption
+    assertEquals("example.com", option.hostedDomainFilter)
+  }
+  @Test fun invalidOptionsRejectBeforeProviderWorkAndPermitRetry() {
+    for (options in listOf(
+      AndroidSignInOptions(flow = "unknown"),
+      AndroidSignInOptions(autoSelect = false),
+      AndroidSignInOptions(filterByAuthorizedAccounts = true),
+      AndroidSignInOptions(hostedDomain = ""),
+      AndroidSignInOptions(hostedDomain = "https://example.com"),
+      AndroidSignInOptions(hostedDomain = "*.example.com"),
+      AndroidSignInOptions(hostedDomain = "example..com")
+    )) {
+      assertEquals("CONFIGURATION_ERROR", start(options = options).code)
+    }
+    assertEquals(0, provider.gets)
+    val retry = start(); success(); assertEquals(1, retry.settles)
+  }
+  @Test fun bottomSheetCancellationAndNoCredentialsNeverFallBack() {
+    for (error in listOf(GetCredentialCancellationException(), NoCredentialException())) {
+      val result = start(options = AndroidSignInOptions(flow = "bottomSheet"))
+      val calls = provider.gets; val old = provider.getCallback
+      old.onError(error)
+      assertEquals(if (error is GetCredentialCancellationException) "CANCELLATION_ERROR" else "NO_CREDENTIALS_ERROR", result.code)
+      assertEquals(calls, provider.gets); assertEquals(1, result.settles)
+      val retry = start(); old.onError(error); success()
+      assertEquals(1, retry.settles); assertEquals(1, result.settles)
+    }
+  }
+  @Test fun bridgeOptionsAreCopiedAndTypesAreChecked() {
+    val map = com.facebook.react.bridge.JavaOnlyMap.of("flow", "bottomSheet", "autoSelect", false,
+      "filterByAuthorizedAccounts", false, "hostedDomain", "example.com")
+    val options = AndroidSignInOptions.fromMap(map)
+    map.putString("flow", "button")
+    assertEquals(AndroidSignInOptions("bottomSheet", false, false, "example.com"), options)
+    for (invalid in listOf(
+      com.facebook.react.bridge.JavaOnlyMap.of("flow", null),
+      com.facebook.react.bridge.JavaOnlyMap.of("flow", 123),
+      com.facebook.react.bridge.JavaOnlyMap.of("flow", "bottomSheet", "autoSelect", "false"),
+      com.facebook.react.bridge.JavaOnlyMap.of("flow", "bottomSheet", "autoSelect", null),
+      com.facebook.react.bridge.JavaOnlyMap.of("flow", "button", "hostedDomain", false)
+    )) {
+      assertThrows(Exception::class.java) { AndroidSignInOptions.fromMap(invalid) }
+    }
+  }
+  @Test fun emailComesFromTokenRatherThanLegacyIdentifier() {
+    val payload = android.util.Base64.encodeToString(
+      "{\"sub\":\"123\",\"email\":\"test@example.com\"}".toByteArray(),
+      android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING)
+    val result = start()
+    success("eyJhbGciOiJSUzI1NiJ9.$payload.c2ln")
+    assertEquals("test@example.com", result.value!!["email"])
   }
   @Test fun fullProfileMapped() {
     val result = start()

@@ -169,7 +169,7 @@ jobs:
           bundle exec pod install --project-directory=ios
 
       - name: Native regression tests
-        run: IOS_TEST_DESTINATION="platform=iOS Simulator,name=iPhone 16e" yarn test:ios
+        run: yarn test:ios
 
       - name: Configure example
         run: node scripts/configure-example.mjs

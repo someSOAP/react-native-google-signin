@@ -37,7 +37,7 @@ Start Metro in one terminal, then build and run:
 ```sh
 yarn example start --port 8081
 # Separate terminal:
-yarn example android --device emulator-5554
+yarn example android --device YOUR_ANDROID_SERIAL
 cd example/ios && pod install
 # From repository root:
 yarn example ios --udid YOUR_SIMULATOR_UDID
@@ -53,7 +53,7 @@ XCUITest. No Maestro, account credentials, or device reset is required.
 
 ```sh
 # Only the selected emulator receives the test:
-ANDROID_SERIAL=emulator-5554 yarn e2e:android
+ANDROID_SERIAL=YOUR_ANDROID_SERIAL yarn e2e:android
 IOS_TEST_DESTINATION='platform=iOS Simulator,id=YOUR_UDID' yarn e2e:ios
 ```
 
